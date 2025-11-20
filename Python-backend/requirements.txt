@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+librosa
+numpy
+torch
+transformers
+numba
+soundfile
+gunicorn
+python-multipart==0.0.9
