@@ -26,14 +26,19 @@ export default function Analyzer() {
 const formatVoiceAnalysis = (data) => {
   if (!data) return "No data available.";
 
+  const v = data.voice1; 
+
+  if (!v) return "No valid voice data.";
+
   return `
-**Pitch:** ${data.pitch.value} ${data.pitch.unit} (${data.pitch.label})\n
-**Energy:** ${data.energy.value} ${data.energy.unit} (${data.energy.label})\n
-**Tone:** ${data.tone.value} ${data.tone.unit} (${data.tone.label})\n
-**Speech Rate:** ${data.speech_rate.value} ${data.speech_rate.unit} (${data.speech_rate.label})\n
-**Emotion:** ${data.emotion.label}\n
+**Pitch:** ${v.pitch.value} ${v.pitch.unit} (${v.pitch.label})\n
+**Energy:** ${v.energy.value} ${v.energy.unit} (${v.energy.label})\n
+**Tone:** ${v.tone.value} ${v.tone.unit} (${v.tone.label})\n
+**Speech Rate:** ${v.speech_rate.value} ${v.speech_rate.unit} (${v.speech_rate.label})\n
+**Emotion:** ${v.emotion.label}\n
 `;
 };
+
 
 
 const formatImageAnalysis = (data) => {
