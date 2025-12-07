@@ -49,5 +49,6 @@ export default function useImageAnalysis() {
   return {
     analysisResult,
     handleImageAnalyze,
+    setAnalysisResult
   };
 }

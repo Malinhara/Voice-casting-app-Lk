@@ -9,15 +9,16 @@ export default function Analyzer() {
   const session = JSON.parse(localStorage.getItem("user"));
   const userId = session;
   const { projects, addProject, loading } = useProjects(userId);
-  const { handleImageAnalyze, analysisResult } = useImageAnalysis(userId);
+  const { handleImageAnalyze, analysisResult , setAnalysisResult } = useImageAnalysis(userId);
   const { handleVoiceAnalyze, analysisVoiceResult, finalAnalysis, FinalAnalyze, loadingVoice, loadingFinal, handleUpdateProject, fetchPastProject, pastData, loadingPast } = useAnalysis(userId);
-  const { imageFiles, voiceFiles } = useMediaStore(userId);
+  const { imageFiles, voiceFiles,fetchFiles } = useMediaStore(userId);
 
   const [selectedProjectId, setSelectedProjectId] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newProjectName, setNewProjectName] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedVoice, setSelectedVoice] = useState(null);
+  const [active, setActive] = useState(false);
   const [script, setScript] = useState("");
   const { handleUpload } = useMediaStore(userId);
   const isProjectSelected = !!selectedProjectId;
@@ -275,6 +276,8 @@ return `
                 />
                 <button
                   onClick={() => {
+                    setActive(true);
+                    setAnalysisResult(null)
                     if (selectedImage) handleImageAnalyze(selectedImage.url);
                     else alert("Please select an image to analyze.");
                   }}
@@ -286,6 +289,12 @@ return `
 
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-gray-800">All Images</h3>
+                <button
+    onClick={fetchFiles} // call the store's refresh function
+    className="text-sm bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded-xl transition-colors"
+  >
+    Refresh
+  </button>
                 <select
                   className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   onChange={(e) => showContent(e.target.value, "image")}
@@ -309,15 +318,23 @@ return `
                 )}
               </div>
             </div>
+  {analysisResult ? (
+  // ===== SHOW ANALYSIS RESULT =====
+  <div className="mt-6 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-6 border border-blue-200">
+    <h4 className="font-bold text-blue-800 text-lg mb-3">Image Analysis Result:</h4>
+    <div className="bg-white/80 p-4 rounded-xl border border-blue-100">
+      <ReactMarkdown>{analysisResult}</ReactMarkdown>
+    </div>
+  </div>
+) : active ? (
+  // ===== SHOW LOADING SPINNER =====
+  <div className="mt-6 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-6 border border-blue-200 flex flex-col items-center justify-center">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+    <p className="text-blue-700 font-medium mt-4">Analyzing image...</p>
+  </div>
+) : null}
 
-            {analysisResult && (
-              <div className="mt-6 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-6 border border-blue-200">
-                <h4 className="font-bold text-blue-800 text-lg mb-3">Image Analysis Result:</h4>
-                <div className="bg-white/80 p-4 rounded-xl border border-blue-100">
-                  <ReactMarkdown>{analysisResult}</ReactMarkdown>
-                </div>
-              </div>
-            )}
+
           </div>
 
           {/* Voice Analysis */}
@@ -344,8 +361,7 @@ return `
                     if (selectedVoice) handleVoiceAnalyze(selectedVoice.url);
                     else alert("Please select a Voice to analyze.");
                   }}
-                  className="w-full bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg"
-                >
+                  className="w-full bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg">
                   Analyze Voice
                 </button>
 
@@ -393,6 +409,12 @@ return `
 
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-gray-800">All Voices</h3>
+                  <button
+    onClick={fetchFiles} // call the store's refresh function
+    className="text-sm bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded-xl transition-colors"
+  >
+    Refresh
+  </button>
                 <select
                   className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                   onChange={(e) => showContent(e.target.value, "voice")}

@@ -1,7 +1,7 @@
 // src/hooks/useMediaStore.js
 import { useEffect, useState } from "react";
 import { uploadFileToFirebase } from "./useFirebaseUpload";
-import { getUserFiles, saveFileRecord } from "../api/media";
+import { deleteFile, getUserFiles, saveFileRecord } from "../api/media";
 
 export default function useMediaStore(userId) {
   const [voiceFiles, setVoiceFiles] = useState([]);
@@ -42,6 +42,28 @@ useEffect(() => {
 }, [userId]);
 
 
+  // Delete file
+const handleDelete = async (file, type) => {
+  try {
+    // Await the deletion API call
+    const res = await deleteFile(userId, file.url, type);
+
+    if (res.success) { // assuming your API returns { success: true }
+      if (type === "voice") {
+        setVoiceFiles((prev) => prev.filter((f) => f.url !== file.url));
+      } else {
+        setImageFiles((prev) => prev.filter((f) => f.url !== file.url));
+      }
+    } else {
+      console.error("Delete failed on server:", res.message);
+    }
+  } catch (err) {
+    console.error("Delete failed:", err);
+  }
+};
+
+  
+
   // Upload file
 const handleUpload = async (files, type) => {
   if (!files?.length) return [];
@@ -68,6 +90,7 @@ const handleUpload = async (files, type) => {
       // Save record to backend
       await saveFileRecord(userId, url, type);
 
+
     } catch (err) {
       console.error("Upload failed for file:", file.name, err);
     }
@@ -78,7 +101,9 @@ const handleUpload = async (files, type) => {
   return {
     imageFiles,
     voiceFiles,
+    handleDelete,
     handleUpload,
+    fetchFiles,
     setImageFiles, // <-- make sure these are returned
     setVoiceFiles, // <-- make sure these are returned
   };
