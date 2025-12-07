@@ -114,15 +114,15 @@ app.post("/analyze-image", async (req, res) => {
     console.log("Received image URL for analysis:", image_url);
 
 const prompt = `
-  Analyze the human in this image in detail. Focus only on the person:
+  Analyze the person in this image in detail. Focus only on their appearance:
+
   Image URL: ${image_url}
 
-  1. Face: Estimate age, gender (male, female), expression, facial features, and mood. 
+  1. Face: Estimate the person's age range and describe their *perceived* gender based strictly on visible traits (e.g., facial features, hair, clothing). Use cautious wording such as "appears female" or "appears male." If uncertain, say "gender unclear" instead of guessing. Also describe facial expression, key facial features, and mood.
 
-  2. Body & Pose: Describe posture, gestures, clothing, and accessories.
-
-  
+  2. Body & Pose: Describe posture, body position, clothing, gear, and accessories. Do not identify the real person.
 `;
+
 
 
     // Create a chat session and send message
